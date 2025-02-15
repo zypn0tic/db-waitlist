@@ -25,41 +25,31 @@ console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is mis
 // Add this near your other environment variables at the top
 const RENDER_DEPLOY_HOOK_SECRET = process.env.RENDER_DEPLOY_HOOK_SECRET;
 
-// Update MongoDB connection
-const connectWithRetry = async () => {
-    const MAX_RETRIES = 5;
-    let retries = 0;
+// At the top of your file, after requires
+mongoose.set('strictQuery', false);
 
-    while (retries < MAX_RETRIES) {
-        try {
-            console.log(`MongoDB connection attempt ${retries + 1}/${MAX_RETRIES}`);
-            
-            await mongoose.connect(process.env.MONGODB_URI, {
-                dbName: 'waitlist-db',
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                serverSelectionTimeoutMS: 30000,
-                retryWrites: true,
-                w: 'majority'
-            });
-
-            console.log('✅ Connected to MongoDB');
-            return true;
-        } catch (err) {
-            retries++;
-            console.error(`Connection attempt ${retries} failed:`, err.message);
-            if (retries === MAX_RETRIES) break;
-            await new Promise(r => setTimeout(r, 5000)); // Wait 5 seconds between retries
-        }
+// Simplified MongoDB connection
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            dbName: 'waitlist-db'
+        });
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        return true;
+    } catch (error) {
+        console.error('MongoDB connection error:', error.message);
+        return false;
     }
-    return false;
 };
 
-// Start server only after MongoDB connects
+// Start server only after DB connects
 const startServer = async () => {
-    const connected = await connectWithRetry();
-    if (!connected) {
-        console.error('Failed to connect to MongoDB. Exiting...');
+    const isConnected = await connectDB();
+    
+    if (!isConnected) {
+        console.error('Could not connect to MongoDB. Exiting...');
         process.exit(1);
     }
 
@@ -375,5 +365,20 @@ process.on('SIGTERM', () => {
         console.log('MongoDB connection closed.');
         process.exit(0);
     });
+});
+
+// Add this right after your middleware setup
+app.get('/test', async (req, res) => {
+    try {
+        const state = mongoose.connection.readyState;
+        res.json({
+            mongodb: state === 1 ? 'Connected' : 'Disconnected',
+            state: state,
+            database: mongoose.connection.name,
+            host: mongoose.connection.host
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
