@@ -31,15 +31,23 @@ mongoose.set('strictQuery', false);
 // Simplified MongoDB connection
 const connectDB = async () => {
     try {
+        console.log('Attempting to connect to MongoDB...');
+        console.log('Database URL exists:', !!process.env.MONGODB_URI);
+        
         const conn = await mongoose.connect(process.env.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             dbName: 'waitlist-db'
         });
+        
         console.log(`MongoDB Connected: ${conn.connection.host}`);
         return true;
     } catch (error) {
-        console.error('MongoDB connection error:', error.message);
+        console.error('MongoDB connection error details:', {
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
         return false;
     }
 };
