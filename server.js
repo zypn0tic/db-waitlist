@@ -8,10 +8,10 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: ['https://waitlist-db-d8z6.onrender.com', 'http://localhost:3000'],
+    origin: true, // Allow all origins in development
     methods: ['GET', 'POST'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Accept']
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.static(__dirname));  // Serve files from current directory
@@ -24,18 +24,17 @@ console.log('MongoDB URI:', process.env.MONGODB_URI);
 console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is missing');
 
 // Modify the MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => {
-        console.log('✅ Connected to MongoDB successfully');
-    })
-    .catch(err => {
-        console.error('❌ MongoDB connection error:', {
-            message: err.message,
-            code: err.code,
-            name: err.name,
-            stack: err.stack
-        });
-    });
+mongoose.connect(process.env.MONGODB_URI, {
+    dbName: 'waitlist-db',
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    retryWrites: true,
+    w: 'majority'
+}).then(() => {
+    console.log('✅ Connected to MongoDB successfully');
+}).catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+});
 
 // Handle MongoDB connection errors
 mongoose.connection.on('error', err => {
@@ -104,46 +103,50 @@ const rateLimiter = (req, res, next) => {
     next();
 };
 
-// Simplify the waitlist endpoint for testing
+// Update the waitlist endpoint
 app.post('/api/waitlist', async (req, res) => {
     try {
         const { email } = req.body;
-        console.log('Received request for email:', email);
-
-        if (!mongoose.connection.readyState) {
-            console.error('MongoDB not connected');
-            return res.status(500).json({ error: 'Database connection error' });
-        }
+        console.log('Received request:', { email, body: req.body });
 
         if (!email) {
             return res.status(400).json({ error: 'Email is required' });
         }
 
-        const entry = new Waitlist({ 
-            email,
-            ipAddress: req.ip,
-            userAgent: req.get('User-Agent')
-        });
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Invalid email format' });
+        }
 
-        await entry.save();
-        console.log('Successfully saved email:', email);
-        return res.status(201).json({ message: 'Successfully added to waitlist' });
+        // Check MongoDB connection
+        if (mongoose.connection.readyState !== 1) {
+            throw new Error('Database connection is not ready');
+        }
 
-    } catch (error) {
-        console.error('Waitlist error:', {
-            message: error.message,
-            code: error.code,
-            name: error.name,
-            stack: error.stack
-        });
-
-        if (error.code === 11000) {
+        // Check for existing email
+        const existingEmail = await Waitlist.findOne({ email });
+        if (existingEmail) {
             return res.status(409).json({ error: 'Email already registered' });
         }
 
+        // Create new entry
+        const entry = new Waitlist({ email });
+        await entry.save();
+        
+        console.log('Email saved:', email);
+        return res.status(201).json({ message: 'Successfully added to waitlist' });
+
+    } catch (error) {
+        console.error('Server error:', {
+            message: error.message,
+            stack: error.stack,
+            mongoState: mongoose.connection.readyState
+        });
+
         return res.status(500).json({ 
-            error: 'Failed to join waitlist',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            error: 'Server error',
+            message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 });
