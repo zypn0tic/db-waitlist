@@ -8,9 +8,10 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: '*',
+    origin: ['https://waitlist-db-d8z6.onrender.com', 'https://api.render.com'],
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
+    allowedHeaders: ['Content-Type'],
+    credentials: true
 }));
 app.use(express.json());
 app.use(express.static(__dirname));
@@ -223,4 +224,14 @@ process.on('SIGTERM', () => {
 
 process.on('unhandledRejection', (error) => {
     console.error('Unhandled Promise Rejection:', error);
+});
+
+app.post('/deploy/srv-cuo3jnt2ng1s73e2fe70', (req, res) => {
+    if (req.query.key === '9UNf5Soo8cE') {
+        // Trigger your deployment logic here
+        console.log('Deploy hook received');
+        res.json({ status: 'Deployment triggered' });
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
 });
