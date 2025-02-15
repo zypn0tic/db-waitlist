@@ -25,26 +25,38 @@ console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is mis
 // Add this near your other environment variables at the top
 const RENDER_DEPLOY_HOOK_SECRET = process.env.RENDER_DEPLOY_HOOK_SECRET;
 
-// Modify the MongoDB connection
+// Update MongoDB connection with better error handling
 mongoose.connect(process.env.MONGODB_URI, {
     dbName: 'waitlist-db',
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000,
     retryWrites: true,
     w: 'majority'
 }).then(() => {
     console.log('✅ Connected to MongoDB successfully');
+    console.log('Database name:', mongoose.connection.name);
+    console.log('Connection state:', mongoose.connection.readyState);
 }).catch(err => {
-    console.error('❌ MongoDB connection error:', err);
+    console.error('❌ MongoDB connection error:', {
+        message: err.message,
+        code: err.code,
+        name: err.name,
+        state: mongoose.connection.readyState
+    });
 });
 
-// Handle MongoDB connection errors
-mongoose.connection.on('error', err => {
-    console.error('MongoDB connection error:', err);
+// Add connection event listeners
+mongoose.connection.on('connected', () => {
+    console.log('Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('Mongoose connection error:', err);
 });
 
 mongoose.connection.on('disconnected', () => {
-    console.log('MongoDB disconnected');
+    console.log('Mongoose disconnected from MongoDB');
 });
 
 // Email Schema
@@ -294,6 +306,31 @@ app.post('/api/deploy-hook', async (req, res) => {
         console.error('Deploy hook error:', error);
         return res.status(500).json({ error: 'Deploy hook processing failed' });
     }
+});
+
+// Add this endpoint to check MongoDB connection status
+app.get('/api/db-status', (req, res) => {
+    const status = {
+        isConnected: mongoose.connection.readyState === 1,
+        state: mongoose.connection.readyState,
+        dbName: mongoose.connection.name,
+        host: mongoose.connection.host,
+        time: new Date().toISOString()
+    };
+    
+    if (!status.isConnected) {
+        return res.status(503).json({
+            ...status,
+            message: 'Database not connected',
+            readyState: mongoose.STATES[mongoose.connection.readyState]
+        });
+    }
+    
+    res.json({
+        ...status,
+        message: 'Database connected',
+        collections: Object.keys(mongoose.connection.collections)
+    });
 });
 
 // Error handling middleware
