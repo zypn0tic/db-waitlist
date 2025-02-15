@@ -403,13 +403,20 @@
                 joinWaitlistBtn.disabled = true;
                 joinWaitlistBtn.textContent = 'Joining...';
                 
+                // Create the request data object with all fields
+                const requestData = {
+                    name: name,
+                    email: email,
+                    company: company
+                };
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ email, company, name })
+                    body: JSON.stringify(requestData)
                 });
                 
                 const data = await response.json();
