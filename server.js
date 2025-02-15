@@ -22,6 +22,9 @@ console.log('MongoDB URI:', process.env.MONGODB_URI);
 // At the top of your file, add this line to debug MongoDB URI
 console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is missing');
 
+// Add this near your other environment variables at the top
+const RENDER_DEPLOY_HOOK_SECRET = process.env.RENDER_DEPLOY_HOOK_SECRET;
+
 // Modify the MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
     dbName: 'waitlist-db',
@@ -102,50 +105,78 @@ const rateLimiter = (req, res, next) => {
     next();
 };
 
-// Update the waitlist endpoint
+// Update the waitlist endpoint with better error logging
 app.post('/api/waitlist', async (req, res) => {
     try {
-        const { email } = req.body;
-        console.log('Received request:', { email, body: req.body });
+        console.log('Request received:', {
+            body: req.body,
+            headers: req.headers,
+            method: req.method
+        });
 
+        const { email } = req.body;
+        
         if (!email) {
+            console.log('No email provided in request');
             return res.status(400).json({ error: 'Email is required' });
         }
 
-        // Validate email format
+        console.log('MongoDB state:', mongoose.connection.readyState);
+        
+        // Check MongoDB connection first
+        if (mongoose.connection.readyState !== 1) {
+            console.error('MongoDB not connected. State:', mongoose.connection.readyState);
+            return res.status(503).json({ error: 'Database connection error' });
+        }
+
+        // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
+            console.log('Invalid email format:', email);
             return res.status(400).json({ error: 'Invalid email format' });
         }
 
-        // Check MongoDB connection
-        if (mongoose.connection.readyState !== 1) {
-            throw new Error('Database connection is not ready');
-        }
-
         // Check for existing email
+        console.log('Checking for existing email...');
         const existingEmail = await Waitlist.findOne({ email });
+        
         if (existingEmail) {
+            console.log('Email already exists:', email);
             return res.status(409).json({ error: 'Email already registered' });
         }
 
         // Create new entry
-        const entry = new Waitlist({ email });
+        console.log('Creating new entry...');
+        const entry = new Waitlist({ 
+            email,
+            ipAddress: req.ip,
+            userAgent: req.get('User-Agent')
+        });
+
+        // Save to database
+        console.log('Saving to database...');
         await entry.save();
         
-        console.log('Email saved:', email);
+        console.log('Successfully saved email:', email);
         return res.status(201).json({ message: 'Successfully added to waitlist' });
 
     } catch (error) {
-        console.error('Server error:', {
+        console.error('Detailed error:', {
+            name: error.name,
             message: error.message,
             stack: error.stack,
-            mongoState: mongoose.connection.readyState
+            mongoState: mongoose.connection.readyState,
+            mongoError: error.code
         });
+
+        // Send appropriate error response
+        if (error.code === 11000) {
+            return res.status(409).json({ error: 'Email already registered' });
+        }
 
         return res.status(500).json({ 
             error: 'Server error',
-            message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+            details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 });
@@ -217,6 +248,52 @@ app.get('/test-db', async (req, res) => {
 // Add a simple test endpoint
 app.get('/', (req, res) => {
     res.json({ message: 'Server is running' });
+});
+
+// Add a diagnostic endpoint
+app.get('/api/status', (req, res) => {
+    res.json({
+        server: 'running',
+        mongoConnection: mongoose.connection.readyState,
+        dbName: mongoose.connection.name,
+        nodeEnv: process.env.NODE_ENV,
+        time: new Date().toISOString()
+    });
+});
+
+// Update the deploy hook endpoint
+app.post('/api/deploy-hook', async (req, res) => {
+    try {
+        const { key } = req.query; // Render sends the key as a query parameter
+        
+        if (!RENDER_DEPLOY_HOOK_SECRET) {
+            console.error('RENDER_DEPLOY_HOOK_SECRET not configured');
+            return res.status(500).json({ error: 'Server configuration error' });
+        }
+
+        if (key !== RENDER_DEPLOY_HOOK_SECRET) {
+            console.error('Invalid deploy hook key');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        console.log('Deploy hook triggered:', new Date().toISOString());
+
+        // Log deployment information
+        console.log('Deployment info:', {
+            timestamp: new Date().toISOString(),
+            environment: process.env.NODE_ENV,
+            mongoConnection: mongoose.connection.readyState
+        });
+
+        return res.status(200).json({ 
+            message: 'Deploy hook processed successfully',
+            timestamp: new Date().toISOString(),
+            service: 'srv-cuo3jnt2ng1s73e2fe70'
+        });
+    } catch (error) {
+        console.error('Deploy hook error:', error);
+        return res.status(500).json({ error: 'Deploy hook processing failed' });
+    }
 });
 
 // Error handling middleware
