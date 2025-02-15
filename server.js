@@ -15,6 +15,30 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Define Waitlist Schema
+const waitlistSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true,
+        validate: {
+            validator: function(v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email!`
+        }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+// Create Waitlist Model
+const Waitlist = mongoose.model('Waitlist', waitlistSchema);
+
 // MongoDB Connection with retries
 const connectWithRetry = async () => {
     const maxRetries = 5;
@@ -71,7 +95,7 @@ app.post('/api/waitlist', async (req, res) => {
         }
 
         // Check for existing email
-        const existingEmail = await Waitlist.findOne({ email });
+        const existingEmail = await Waitlist.findOne({ email: email.toLowerCase() });
         if (existingEmail) {
             return res.status(409).json({ error: 'Email already registered' });
         }
@@ -80,6 +104,7 @@ app.post('/api/waitlist', async (req, res) => {
         const waitlistEntry = new Waitlist({ email });
         await waitlistEntry.save();
         
+        console.log('Successfully saved email:', email);
         return res.status(201).json({ message: 'Successfully joined waitlist' });
     } catch (error) {
         console.error('Error handling waitlist submission:', error);
