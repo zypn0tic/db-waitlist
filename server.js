@@ -8,9 +8,8 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: true, // Allow all origins in development
+    origin: '*',  // Allow all origins
     methods: ['GET', 'POST'],
-    credentials: true,
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
 }));
 app.use(express.json());
@@ -213,6 +212,11 @@ app.get('/test-db', async (req, res) => {
             connectionState: mongoose.connection.readyState
         });
     }
+});
+
+// Add a simple test endpoint
+app.get('/', (req, res) => {
+    res.json({ message: 'Server is running' });
 });
 
 // Error handling middleware
