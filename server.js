@@ -4,48 +4,36 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: '*',  // Allow all origins
+    origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
 }));
 app.use(express.json());
-app.use(express.static(__dirname));  // Serve files from current directory
+app.use(express.static(__dirname));
 
-// At the top, after your requires
+// Debug logging
 console.log('Starting server...');
-console.log('MongoDB URI:', process.env.MONGODB_URI);
-
-// At the top of your file, add this line to debug MongoDB URI
 console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is missing');
 
-// Add this near your other environment variables at the top
-const RENDER_DEPLOY_HOOK_SECRET = process.env.RENDER_DEPLOY_HOOK_SECRET;
-
-// At the top of your file, after requires
+// MongoDB Configuration
 mongoose.set('strictQuery', false);
 
-// Simplified MongoDB connection
+// MongoDB Connection
 const connectDB = async () => {
     try {
         console.log('Attempting to connect to MongoDB...');
-        
-        // Clean up the MongoDB URI by removing any trailing semicolons
-        const cleanURI = process.env.MONGODB_URI.replace(/;$/, '');
-        
-        const conn = await mongoose.connect(cleanURI, {
+        await mongoose.connect(process.env.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             dbName: 'waitlist-db',
-            // Add these additional options for better connection handling
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000,
         });
-        
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        console.log(`MongoDB Connected: ${mongoose.connection.host}`);
         return true;
     } catch (error) {
         console.error('MongoDB connection error details:', {
@@ -57,23 +45,7 @@ const connectDB = async () => {
     }
 };
 
-// Start server only after DB connects
-const startServer = async () => {
-    const isConnected = await connectDB();
-    
-    if (!isConnected) {
-        console.error('Could not connect to MongoDB. Exiting...');
-        process.exit(1);
-    }
-
-    app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-    });
-};
-
-startServer();
-
-// Add connection event listeners
+// MongoDB Event Listeners
 mongoose.connection.on('connected', () => {
     console.log('Mongoose connected to MongoDB');
 });
@@ -86,7 +58,7 @@ mongoose.connection.on('disconnected', () => {
     console.log('Mongoose disconnected from MongoDB');
 });
 
-// Email Schema
+// Waitlist Schema
 const waitlistSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -114,9 +86,9 @@ const waitlistSchema = new mongoose.Schema({
 
 const Waitlist = mongoose.model('Waitlist', waitlistSchema);
 
-// Rate limiting middleware
+// Rate Limiting
 const rateLimit = new Map();
-const RATE_LIMIT_WINDOW = 3600000; // 1 hour in milliseconds
+const RATE_LIMIT_WINDOW = 3600000; // 1 hour
 const MAX_REQUESTS = 5;
 
 const rateLimiter = (req, res, next) => {
@@ -144,8 +116,8 @@ const rateLimiter = (req, res, next) => {
     next();
 };
 
-// Update the waitlist endpoint with better error logging
-app.post('/api/waitlist', async (req, res) => {
+// Routes
+app.post('/api/waitlist', rateLimiter, async (req, res) => {
     try {
         console.log('Request received:', {
             body: req.body,
@@ -154,50 +126,36 @@ app.post('/api/waitlist', async (req, res) => {
         });
 
         const { email } = req.body;
-        console.log('Received email:', email);
-
-        // Basic validation
+        
         if (!email) {
             console.log('No email provided in request');
             return res.status(400).json({ error: 'Email is required' });
         }
 
-        console.log('MongoDB state:', mongoose.connection.readyState);
-        
-        // Check MongoDB connection first
         if (mongoose.connection.readyState !== 1) {
             console.error('MongoDB not connected. State:', mongoose.connection.readyState);
             return res.status(503).json({ error: 'Database connection error' });
         }
 
-        // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             console.log('Invalid email format:', email);
             return res.status(400).json({ error: 'Invalid email format' });
         }
 
-        // Check for existing email
-        console.log('Checking for existing email...');
         const existingEmail = await Waitlist.findOne({ email });
-        
         if (existingEmail) {
             console.log('Email already exists:', email);
             return res.status(409).json({ error: 'Email already registered' });
         }
 
-        // Create new entry
-        console.log('Creating new entry...');
         const entry = new Waitlist({ 
             email,
             ipAddress: req.ip,
             userAgent: req.get('User-Agent')
         });
 
-        // Save to database
-        console.log('Saving to database...');
         await entry.save();
-        
         console.log('Successfully saved email:', email);
         return res.status(201).json({ message: 'Successfully added to waitlist' });
 
@@ -206,11 +164,9 @@ app.post('/api/waitlist', async (req, res) => {
             name: error.name,
             message: error.message,
             stack: error.stack,
-            mongoState: mongoose.connection.readyState,
-            mongoError: error.code
+            mongoState: mongoose.connection.readyState
         });
 
-        // Send appropriate error response
         if (error.code === 11000) {
             return res.status(409).json({ error: 'Email already registered' });
         }
@@ -222,32 +178,7 @@ app.post('/api/waitlist', async (req, res) => {
     }
 });
 
-// View all emails endpoint (password protected)
-app.get('/api/admin/emails', async (req, res) => {
-    try {
-        const adminPassword = req.headers.authorization;
-        
-        if (!process.env.ADMIN_PASSWORD) {
-            console.error('ADMIN_PASSWORD not set in environment variables');
-            return res.status(500).json({ error: 'Server configuration error' });
-        }
-        
-        if (adminPassword !== process.env.ADMIN_PASSWORD) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-
-        const emails = await Waitlist.find()
-            .select('-ipAddress -userAgent') // Exclude sensitive data
-            .sort({ createdAt: -1 });
-            
-        res.json(emails);
-    } catch (error) {
-        console.error('Admin endpoint error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Health check endpoint
+// Health Check Routes
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'ok',
@@ -255,43 +186,6 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Add a test route to check MongoDB connection
-app.get('/api/test', (req, res) => {
-    res.json({
-        mongoState: mongoose.connection.readyState,
-        dbName: mongoose.connection.name,
-        collections: mongoose.connection.collections ? Object.keys(mongoose.connection.collections) : [],
-        connected: mongoose.connection.readyState === 1
-    });
-});
-
-// Add this test endpoint
-app.get('/test-db', async (req, res) => {
-    try {
-        // Test database connection
-        const connectionState = mongoose.connection.readyState;
-        const testEntry = new Waitlist({ email: 'test@test.com' });
-        await testEntry.validate(); // Only validate, don't save
-        
-        res.json({
-            connection: connectionState === 1 ? 'Connected' : 'Disconnected',
-            validation: 'Schema validation working',
-            dbName: mongoose.connection.name
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: error.message,
-            connectionState: mongoose.connection.readyState
-        });
-    }
-});
-
-// Add a simple test endpoint
-app.get('/', (req, res) => {
-    res.json({ message: 'Server is running' });
-});
-
-// Add a diagnostic endpoint
 app.get('/api/status', (req, res) => {
     res.json({
         server: 'running',
@@ -302,76 +196,23 @@ app.get('/api/status', (req, res) => {
     });
 });
 
-// Update the deploy hook endpoint
-app.post('/api/deploy-hook', async (req, res) => {
-    try {
-        const { key } = req.query; // Render sends the key as a query parameter
-        
-        if (!RENDER_DEPLOY_HOOK_SECRET) {
-            console.error('RENDER_DEPLOY_HOOK_SECRET not configured');
-            return res.status(500).json({ error: 'Server configuration error' });
-        }
-
-        if (key !== RENDER_DEPLOY_HOOK_SECRET) {
-            console.error('Invalid deploy hook key');
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-
-        console.log('Deploy hook triggered:', new Date().toISOString());
-
-        // Log deployment information
-        console.log('Deployment info:', {
-            timestamp: new Date().toISOString(),
-            environment: process.env.NODE_ENV,
-            mongoConnection: mongoose.connection.readyState
-        });
-
-        return res.status(200).json({ 
-            message: 'Deploy hook processed successfully',
-            timestamp: new Date().toISOString(),
-            service: 'srv-cuo3jnt2ng1s73e2fe70'
-        });
-    } catch (error) {
-        console.error('Deploy hook error:', error);
-        return res.status(500).json({ error: 'Deploy hook processing failed' });
-    }
-});
-
-// Add this endpoint to check MongoDB connection status
-app.get('/api/db-status', (req, res) => {
-    const status = {
-        isConnected: mongoose.connection.readyState === 1,
-        state: mongoose.connection.readyState,
-        dbName: mongoose.connection.name,
-        host: mongoose.connection.host,
-        time: new Date().toISOString()
-    };
+// Start Server
+const startServer = async () => {
+    const isConnected = await connectDB();
     
-    if (!status.isConnected) {
-        return res.status(503).json({
-            ...status,
-            message: 'Database not connected',
-            readyState: mongoose.STATES[mongoose.connection.readyState]
-        });
+    if (!isConnected) {
+        console.error('Could not connect to MongoDB. Exiting...');
+        process.exit(1);
     }
-    
-    res.json({
-        ...status,
-        message: 'Database connected',
-        collections: Object.keys(mongoose.connection.collections)
-    });
-});
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ 
-        error: 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
     });
-});
+};
 
-// Graceful shutdown
+startServer();
+
+// Graceful Shutdown
 process.on('SIGTERM', () => {
     console.log('SIGTERM received. Shutting down gracefully...');
     mongoose.connection.close(false, () => {
@@ -380,23 +221,6 @@ process.on('SIGTERM', () => {
     });
 });
 
-// Add this right after your middleware setup
-app.get('/test', async (req, res) => {
-    try {
-        const state = mongoose.connection.readyState;
-        res.json({
-            mongodb: state === 1 ? 'Connected' : 'Disconnected',
-            state: state,
-            database: mongoose.connection.name,
-            host: mongoose.connection.host
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+process.on('unhandledRejection', (error) => {
+    console.error('Unhandled Promise Rejection:', error);
 });
-
-// Add this near your other endpoints
-app.get('/api/waitlist', (req, res) => {
-    res.json({ message: 'Waitlist API is running. Use POST to submit an email.' });
-});
-
