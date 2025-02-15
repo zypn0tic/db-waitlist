@@ -382,3 +382,8 @@ app.get('/test', async (req, res) => {
     }
 });
 
+// Add this near your other endpoints
+app.get('/api/waitlist', (req, res) => {
+    res.json({ message: 'Waitlist API is running. Use POST to submit an email.' });
+});
+
