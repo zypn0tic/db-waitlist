@@ -226,7 +226,7 @@
       color: #fff;
     }
 
-    /* Updated media queries */
+    /* Updated responsive styles */
     @media (max-width: 768px) {
       .content-container {
         margin: 20px;
@@ -235,30 +235,41 @@
         max-width: 100%;
       }
 
+      .waitlist-form {
+        flex-direction: column;
+        padding: 0 10px;
+      }
+
+      .waitlist-form input[type="email"],
+      .waitlist-form button {
+        width: 100%;
+        margin: 5px 0;
+      }
+
       .main-heading {
         font-size: 2rem;
         padding: 0 10px;
       }
 
+      .main-heading span {
+        font-size: 1.5rem;
+      }
+
       .description {
         font-size: 1rem;
-        padding: 0 10px;
+        padding: 0 15px;
         margin-bottom: 30px;
       }
 
-      /* Keep shapes visible but adjust size */
       .shape {
         transform: scale(0.7);
-      }
-
-      .bg-gradient {
-        opacity: 0.1;
       }
     }
 
     @media (max-width: 480px) {
       .content-container {
-        padding: 20px 15px;
+        margin: 15px;
+        padding: 20px 10px;
       }
 
       .main-heading {
@@ -271,6 +282,64 @@
 
       .description {
         font-size: 0.95rem;
+        padding: 0 10px;
+      }
+
+      .small-tagline {
+        font-size: 12px;
+      }
+
+      .waitlist-form input[type="email"],
+      .waitlist-form button {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+      }
+
+      .shape {
+        transform: scale(0.5);
+      }
+
+      .shape1 { top: 5%; left: 2%; }
+      .shape2 { top: 20%; right: 1%; }
+      .shape3 { bottom: 2%; left: 1%; }
+      .shape4 { bottom: 5%; right: 4%; }
+    }
+
+    /* Landscape mode optimization */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .content-container {
+        margin: 10px auto;
+        padding: 20px 15px;
+      }
+
+      .main-heading {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      .description {
+        margin-bottom: 20px;
+      }
+
+      .footer {
+        position: relative;
+        margin-top: 20px;
+      }
+
+      .shape {
+        transform: scale(0.4);
+      }
+    }
+
+    /* Touch device optimization */
+    @media (hover: none) {
+      .waitlist-form button:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .waitlist-form button:active {
+        transform: scale(0.98);
       }
     }
   </style>
@@ -329,7 +398,6 @@
         const emailInput = document.getElementById("emailInput");
         const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
 
-        // Update to your Render deployment URL
         const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
 
         waitlistForm.addEventListener('submit', async (e) => {
@@ -373,7 +441,6 @@
             }
         });
     });
-</script>
-
+  </script>
 </body>
 </html>
