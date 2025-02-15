@@ -299,7 +299,7 @@
         const emailInput = document.getElementById("emailInput");
         const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
 
-        // Update to your actual Render URL
+        // Update to your Render deployment URL
         const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
 
         waitlistForm.addEventListener('submit', async (e) => {
@@ -316,29 +316,40 @@
                 joinWaitlistBtn.disabled = true;
                 joinWaitlistBtn.textContent = 'Joining...';
                 
+                console.log('Attempting to connect to:', API_URL); // Debug log
+                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ email: email })
+                    body: JSON.stringify({ email: email }),
+                    mode: 'cors' // Explicitly state we're using CORS
                 });
                 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to join waitlist');
-                }
-                
                 const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to join waitlist');
+                }
                 
                 // Success
                 emailInput.value = '';
                 alert('Successfully joined the waitlist!');
                 
             } catch (error) {
-                console.error('Error:', error);
-                alert(error.message || 'Failed to join waitlist. Please try again.');
+                console.error('Detailed error:', {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack
+                });
+                
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    alert('Unable to connect to the server. Please make sure the server is running.');
+                } else {
+                    alert(error.message || 'Failed to join waitlist. Please try again later.');
+                }
             } finally {
                 joinWaitlistBtn.disabled = false;
                 joinWaitlistBtn.textContent = 'Join Waitlist';
