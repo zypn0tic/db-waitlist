@@ -409,6 +409,13 @@
                 alert('Please enter your email address');
                 return;
             }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
             
             try {
                 joinWaitlistBtn.disabled = true;
@@ -434,7 +441,11 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                alert(error.message || 'Failed to join waitlist');
+                if (error.message.includes('already registered')) {
+                    alert('This email is already registered');
+                } else {
+                    alert('Failed to join waitlist. Please try again later.');
+                }
             } finally {
                 joinWaitlistBtn.disabled = false;
                 joinWaitlistBtn.textContent = 'Join Waitlist';
