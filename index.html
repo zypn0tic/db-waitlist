@@ -347,6 +347,13 @@
     <form class="waitlist-form" id="waitlistForm">
       <input
         type="text"
+        name="name"
+        id="nameInput"
+        placeholder="Your Name"
+        required
+      />
+      <input
+        type="text"
         name="company"
         id="companyInput"
         placeholder="Your Company Name"
@@ -366,6 +373,7 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         const waitlistForm = document.getElementById("waitlistForm");
+        const nameInput = document.getElementById("nameInput");
         const companyInput = document.getElementById("companyInput");
         const emailInput = document.getElementById("emailInput");
         const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
@@ -375,11 +383,12 @@
         waitlistForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const name = nameInput.value.trim();
             const company = companyInput.value.trim();
             const email = emailInput.value.trim();
             
-            if (!email || !company) {
-                alert('Please enter both company name and email address');
+            if (!email || !company || !name) {
+                alert('Please fill in all fields');
                 return;
             }
 
@@ -400,7 +409,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ email, company })
+                    body: JSON.stringify({ email, company, name })
                 });
                 
                 const data = await response.json();
@@ -409,6 +418,7 @@
                     throw new Error(data.error || 'Failed to join waitlist');
                 }
                 
+                nameInput.value = '';
                 emailInput.value = '';
                 companyInput.value = '';
                 alert('Successfully joined the waitlist!');
