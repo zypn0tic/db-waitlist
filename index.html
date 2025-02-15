@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Next-Gen Advertising - Join Waitlist</title>
+  <title>Next-Gen Advertising</title>
   <style>
     * {
       margin: 0;
@@ -16,130 +16,26 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
       background: linear-gradient(135deg, #000000, #1a1a1a);
-      color: #ffffff;
+      color: #fff;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
       position: relative;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      margin: 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .gradient-text {
-      background: linear-gradient(45deg, #4f46e5, #7c3aed);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      line-height: 1.2;
-    }
-
-    h1 span {
-      display: block;
-      color: #a0aec0;
-      font-size: 1.5rem;
-      margin-top: 10px;
-      font-weight: 400;
-    }
-
-    .description {
-      color: #a0aec0;
-      line-height: 1.6;
-      margin-bottom: 30px;
-      font-size: 1.1rem;
-    }
-
-    .waitlist-form {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    input[type="email"] {
-      flex: 1;
-      padding: 15px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
-      color: white;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    input[type="email"]:focus {
-      outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
-    }
-
-    button {
-      padding: 15px 30px;
-      background: linear-gradient(45deg, #4f46e5, #7c3aed);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-      white-space: nowrap;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
-    }
-
-    button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .footer {
-      position: fixed;
-      bottom: 20px;
-      color: #666;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-
-    /* Background elements */
+    /* Animated background elements */
     .bg-gradient {
-      position: fixed;
+      position: absolute;
       border-radius: 50%;
-      filter: blur(100px);
+      filter: blur(80px);
       opacity: 0.15;
       z-index: 0;
     }
 
     .bg-gradient-1 {
-      background: #4f46e5;
+      background: #2563eb;
       width: 500px;
       height: 500px;
       top: -250px;
@@ -156,75 +52,7 @@
       animation: float 10s ease-in-out infinite;
     }
 
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      50% { transform: translate(20px, 20px) rotate(10deg); }
-    }
-
-    /* Toast notification */
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 25px;
-      background: rgba(0, 0, 0, 0.9);
-      color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-      transform: translateY(-100px);
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 30px 20px;
-        margin: 10px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      h1 span {
-        font-size: 1.2rem;
-      }
-
-      .waitlist-form {
-        flex-direction: column;
-      }
-
-      button {
-        width: 100%;
-      }
-
-      .description {
-        font-size: 1rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 20px 15px;
-      }
-
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      .gradient-text {
-        font-size: 12px;
-      }
-    }
-
-    /* Add this to your style section */
+    /* Shape positioning */
     .shape {
       position: absolute;
       z-index: 0;
@@ -268,34 +96,157 @@
       filter: brightness(0.7) sepia(0.2);
     }
 
-    /* Update the float animation to include rotation */
     @keyframes float {
-      0%, 100% { 
-        transform: translate(0, 0) rotate(0deg); 
-      }
-      50% { 
-        transform: translate(20px, 20px) rotate(10deg); 
-      }
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(20px, 20px) rotate(10deg); }
     }
 
-    /* Add responsive adjustments for shapes */
-    @media (max-width: 768px) {
-      .shape {
-        opacity: 0.3; /* Reduce opacity on mobile */
+    .content-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .small-tagline {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      margin-bottom: 20px;
+      color: #888;
+      background: linear-gradient(to right, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+    }
+
+    .main-heading {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .main-heading span {
+      display: block;
+      color: #888;
+      font-weight: 400;
+      font-size: 2rem;
+      margin-top: 10px;
+    }
+
+    .description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 40px;
+      color: #aaa;
+      padding: 0 20px;
+    }
+
+    .waitlist-form {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 10px;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .waitlist-form input[type="email"] {
+      padding: 15px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      flex: 1;
+      min-width: 200px;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .waitlist-form input[type="email"]:focus {
+      outline: none;
+      border-color: #2563eb;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .waitlist-form button {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .waitlist-form button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    .waitlist-form button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .footer a {
+      color: #888;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer a:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 600px) {
+      .waitlist-form {
+        flex-direction: column;
       }
       
-      .shape1, .shape2, .shape3, .shape4 {
-        width: 60px; /* Smaller size on mobile */
+      .main-heading {
+        font-size: 2rem;
+        padding: 0 20px;
+      }
+      
+      .main-heading span {
+        font-size: 1.6rem;
+      }
+
+      .content-container {
+        margin: 20px;
+      }
+
+      .shape {
+        opacity: 0.2;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Background gradients -->
-  <div class="bg-gradient bg-gradient-1"></div>
-  <div class="bg-gradient bg-gradient-2"></div>
-
-  <!-- Add these elements after the background gradients -->
+  <!-- Background Shapes -->
   <div class="shape shape1">
     <img src="images/shape1.png" alt="Shape 1" />
   </div>
@@ -309,101 +260,47 @@
     <img src="images/shape4.png" alt="Shape 4" />
   </div>
 
-  <!-- Main content -->
-  <div class="container">
-    <div class="gradient-text">From Ideas To Impact</div>
-    <h1>
+  <!-- Animated background gradients -->
+  <div class="bg-gradient bg-gradient-1"></div>
+  <div class="bg-gradient bg-gradient-2"></div>
+
+  <div class="content-container">
+    <div class="small-tagline">From Ideas To Impact</div>
+    
+    <h1 class="main-heading">
       Next-Gen Advertising
       <span>Reserve Your Spot Now</span>
     </h1>
+    
     <p class="description">
       Join the waitlist for exclusive access to cutting-edge marketing strategies powered by AI and creativity. 
       Elevate your brand with tailored campaigns that deliver real results.
     </p>
-    <form id="waitlistForm" class="waitlist-form">
-      <input 
-        type="email" 
+    
+    <form class="waitlist-form" id="waitlistForm">
+      <input
+        type="email"
+        name="email"
         id="emailInput"
-        placeholder="Enter your email address"
+        placeholder="Your Email Address"
         required
-      >
+      />
       <button type="submit" id="joinWaitlistBtn">Join Waitlist</button>
     </form>
   </div>
 
   <div class="footer">
-    Made with ❤️ by Kalpit Sharma
+    Made with ❤️ by Kalpit Sharma   
   </div>
 
-  <!-- Toast notification -->
-  <div id="toast" class="toast"></div>
-
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const waitlistForm = document.getElementById("waitlistForm");
-      const emailInput = document.getElementById("emailInput");
-      const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
-      const toast = document.getElementById("toast");
+    document.addEventListener("DOMContentLoaded", function () {
+        const waitlistForm = document.getElementById("waitlistForm");
+        const emailInput = document.getElementById("emailInput");
+        const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
 
-<<<<<<< HEAD
-      const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
-
-      function showToast(message, isError = false) {
-        toast.textContent = message;
-        toast.style.background = isError ? 'rgba(220, 38, 38, 0.9)' : 'rgba(16, 185, 129, 0.9)';
-        toast.classList.add('show');
-        setTimeout(() => {
-          toast.classList.remove('show');
-        }, 3000);
-      }
-
-      waitlistForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const email = emailInput.value.trim();
-        
-        if (!email) {
-          showToast('Please enter your email address', true);
-          return;
-        }
-
-        try {
-          joinWaitlistBtn.disabled = true;
-          joinWaitlistBtn.textContent = 'Joining...';
-          
-          const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email })
-          });
-          
-          const data = await response.json();
-          
-          if (!response.ok) {
-            throw new Error(data.error || data.message || 'Failed to join waitlist');
-          }
-          
-          emailInput.value = '';
-          showToast('Successfully joined the waitlist!');
-          
-        } catch (error) {
-          console.error('Submission error:', {
-            message: error.message,
-            type: error.name,
-            response: error.response,
-            stack: error.stack
-          });
-          showToast(error.message || 'Failed to join waitlist. Please try again later.', true);
-        } finally {
-          joinWaitlistBtn.disabled = false;
-          joinWaitlistBtn.textContent = 'Join Waitlist';
-        }
-      });
-=======
-        // Update to your local server
-        const API_URL = 'http://localhost:3000/api/waitlist';
+        // Update to your Render deployment URL
+        const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
 
         waitlistForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -419,16 +316,13 @@
                 joinWaitlistBtn.disabled = true;
                 joinWaitlistBtn.textContent = 'Joining...';
                 
-                console.log('Attempting to connect to:', API_URL); // Debug log
-                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ email: email }),
-                    mode: 'cors' // Explicitly state we're using CORS
+                    body: JSON.stringify({ email })
                 });
                 
                 const data = await response.json();
@@ -437,29 +331,19 @@
                     throw new Error(data.error || 'Failed to join waitlist');
                 }
                 
-                // Success
                 emailInput.value = '';
                 alert('Successfully joined the waitlist!');
                 
             } catch (error) {
-                console.error('Detailed error:', {
-                    message: error.message,
-                    name: error.name,
-                    stack: error.stack
-                });
-                
-                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    alert('Unable to connect to the server. Please make sure the server is running.');
-                } else {
-                    alert(error.message || 'Failed to join waitlist. Please try again later.');
-                }
+                console.error('Error:', error);
+                alert(error.message || 'Failed to join waitlist');
             } finally {
                 joinWaitlistBtn.disabled = false;
                 joinWaitlistBtn.textContent = 'Join Waitlist';
             }
         });
->>>>>>> 4070881 (Add environment configuration files)
     });
-  </script>
+</script>
+
 </body>
 </html>
