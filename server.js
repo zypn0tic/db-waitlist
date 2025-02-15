@@ -14,14 +14,6 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
-app.use(express.static(__dirname));
-
-// Debug logging
-console.log('Starting server...');
-console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is missing');
-
-// MongoDB Configuration
-mongoose.set('strictQuery', false);
 
 // Define Waitlist Schema
 const waitlistSchema = new mongoose.Schema({
@@ -37,11 +29,6 @@ const waitlistSchema = new mongoose.Schema({
             },
             message: props => `${props.value} is not a valid email!`
         }
-    },
-    company: {
-        type: String,
-        required: true,
-        trim: true
     },
     createdAt: {
         type: Date,
@@ -84,38 +71,8 @@ const connectWithRetry = async () => {
     return false;
 };
 
-// Rate Limiting
-const rateLimit = new Map();
-const RATE_LIMIT_WINDOW = 3600000; // 1 hour
-const MAX_REQUESTS = 5;
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const now = Date.now();
-    
-    if (rateLimit.has(ip)) {
-        const userData = rateLimit.get(ip);
-        const windowStart = userData.timestamp;
-        
-        if (now - windowStart < RATE_LIMIT_WINDOW) {
-            if (userData.count >= MAX_REQUESTS) {
-                return res.status(429).json({ 
-                    error: 'Too many requests. Please try again later.' 
-                });
-            }
-            userData.count++;
-        } else {
-            userData.count = 1;
-            userData.timestamp = now;
-        }
-    } else {
-        rateLimit.set(ip, { count: 1, timestamp: now });
-    }
-    next();
-};
-
 // Routes
-app.post('/api/waitlist', rateLimiter, async (req, res) => {
+app.post('/api/waitlist', async (req, res) => {
     try {
         if (mongoose.connection.readyState !== 1) {
             // Try to reconnect if not connected
@@ -125,10 +82,10 @@ app.post('/api/waitlist', rateLimiter, async (req, res) => {
             }
         }
 
-        const { email, company } = req.body;
+        const { email } = req.body;
         
-        if (!email || !company) {
-            return res.status(400).json({ error: 'Email and company name are required' });
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
         }
 
         // Email validation
@@ -143,14 +100,11 @@ app.post('/api/waitlist', rateLimiter, async (req, res) => {
             return res.status(409).json({ error: 'Email already registered' });
         }
 
-        // Save new entry with company name
-        const waitlistEntry = new Waitlist({
-            email: email.toLowerCase(),
-            company: company.trim()
-        });
+        // Save new email
+        const waitlistEntry = new Waitlist({ email });
         await waitlistEntry.save();
         
-        console.log('Successfully saved:', { email, company });
+        console.log('Successfully saved email:', email);
         return res.status(201).json({ message: 'Successfully joined waitlist' });
     } catch (error) {
         console.error('Error handling waitlist submission:', error);
@@ -164,16 +118,6 @@ app.get('/health', (req, res) => {
         status: 'ok',
         mongoConnection: mongoose.connection.readyState === 1,
         timestamp: new Date().toISOString()
-    });
-});
-
-app.get('/api/status', (req, res) => {
-    res.json({
-        server: 'running',
-        mongoConnection: mongoose.connection.readyState,
-        dbName: mongoose.connection.name,
-        nodeEnv: process.env.NODE_ENV,
-        time: new Date().toISOString()
     });
 });
 
@@ -203,26 +147,4 @@ process.on('SIGTERM', () => {
         console.log('MongoDB connection closed.');
         process.exit(0);
     });
-});
-
-process.on('unhandledRejection', (error) => {
-    console.error('Unhandled Promise Rejection:', error);
-});
-
-process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-    mongoose.connection.close(false, () => {
-        console.log('MongoDB connection closed due to error.');
-        process.exit(1);
-    });
-});
-
-app.post('/deploy/srv-cuo3jnt2ng1s73e2fe70', (req, res) => {
-    if (req.query.key === '9UNf5Soo8cE') {
-        // Trigger your deployment logic here
-        console.log('Deploy hook received');
-        res.json({ status: 'Deployment triggered' });
-    } else {
-        res.status(401).json({ error: 'Unauthorized' });
-    }
 });
