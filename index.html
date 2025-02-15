@@ -345,6 +345,7 @@
       const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
       const toast = document.getElementById("toast");
 
+<<<<<<< HEAD
       const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
 
       function showToast(message, isError = false) {
@@ -400,6 +401,64 @@
           joinWaitlistBtn.textContent = 'Join Waitlist';
         }
       });
+=======
+        // Update to your local server
+        const API_URL = 'http://localhost:3000/api/waitlist';
+
+        waitlistForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+            
+            try {
+                joinWaitlistBtn.disabled = true;
+                joinWaitlistBtn.textContent = 'Joining...';
+                
+                console.log('Attempting to connect to:', API_URL); // Debug log
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email }),
+                    mode: 'cors' // Explicitly state we're using CORS
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to join waitlist');
+                }
+                
+                // Success
+                emailInput.value = '';
+                alert('Successfully joined the waitlist!');
+                
+            } catch (error) {
+                console.error('Detailed error:', {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack
+                });
+                
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    alert('Unable to connect to the server. Please make sure the server is running.');
+                } else {
+                    alert(error.message || 'Failed to join waitlist. Please try again later.');
+                }
+            } finally {
+                joinWaitlistBtn.disabled = false;
+                joinWaitlistBtn.textContent = 'Join Waitlist';
+            }
+        });
+>>>>>>> 4070881 (Add environment configuration files)
     });
   </script>
 </body>

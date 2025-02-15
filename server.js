@@ -8,9 +8,15 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
+<<<<<<< HEAD
     origin: '*',  // Allow all origins
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
+=======
+    origin: '*', // For development only. In production, specify your domain
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Accept']
+>>>>>>> 4070881 (Add environment configuration files)
 }));
 app.use(express.json());
 app.use(express.static(__dirname));  // Serve files from current directory
@@ -22,6 +28,7 @@ console.log('MongoDB URI:', process.env.MONGODB_URI);
 // At the top of your file, add this line to debug MongoDB URI
 console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is missing');
 
+<<<<<<< HEAD
 // Add this near your other environment variables at the top
 const RENDER_DEPLOY_HOOK_SECRET = process.env.RENDER_DEPLOY_HOOK_SECRET;
 
@@ -57,6 +64,29 @@ mongoose.connection.on('error', (err) => {
 
 mongoose.connection.on('disconnected', () => {
     console.log('Mongoose disconnected from MongoDB');
+=======
+// Modify the MongoDB connection
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log('✅ Connected to MongoDB successfully');
+    })
+    .catch(err => {
+        console.error('❌ MongoDB connection error:', {
+            message: err.message,
+            code: err.code,
+            name: err.name
+        });
+        process.exit(1);
+    });
+
+// Handle MongoDB connection errors
+mongoose.connection.on('error', err => {
+    console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB disconnected');
+>>>>>>> 4070881 (Add environment configuration files)
 });
 
 // Email Schema
@@ -117,7 +147,11 @@ const rateLimiter = (req, res, next) => {
     next();
 };
 
+<<<<<<< HEAD
 // Update the waitlist endpoint with better error logging
+=======
+// Simplify the waitlist endpoint for testing
+>>>>>>> 4070881 (Add environment configuration files)
 app.post('/api/waitlist', async (req, res) => {
     try {
         console.log('Request received:', {
@@ -127,12 +161,15 @@ app.post('/api/waitlist', async (req, res) => {
         });
 
         const { email } = req.body;
-        
+        console.log('Received email:', email);
+
+        // Basic validation
         if (!email) {
             console.log('No email provided in request');
             return res.status(400).json({ error: 'Email is required' });
         }
 
+<<<<<<< HEAD
         console.log('MongoDB state:', mongoose.connection.readyState);
         
         // Check MongoDB connection first
@@ -190,6 +227,26 @@ app.post('/api/waitlist', async (req, res) => {
             error: 'Server error',
             details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
+=======
+        // Create and save the entry
+        const entry = new Waitlist({ email });
+        await entry.save();
+        
+        console.log('Email saved successfully:', email);
+        return res.status(201).json({ message: 'Successfully added to waitlist' });
+    } catch (error) {
+        console.error('Save error:', {
+            message: error.message,
+            code: error.code,
+            name: error.name
+        });
+        
+        if (error.code === 11000) {
+            return res.status(409).json({ error: 'Email already registered' });
+        }
+        
+        return res.status(500).json({ error: 'Failed to join waitlist. Please try again later.' });
+>>>>>>> 4070881 (Add environment configuration files)
     }
 });
 
@@ -257,6 +314,7 @@ app.get('/test-db', async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 // Add a simple test endpoint
 app.get('/', (req, res) => {
     res.json({ message: 'Server is running' });
@@ -333,6 +391,8 @@ app.get('/api/db-status', (req, res) => {
     });
 });
 
+=======
+>>>>>>> 4070881 (Add environment configuration files)
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
@@ -354,4 +414,8 @@ process.on('SIGTERM', () => {
         console.log('MongoDB connection closed.');
         process.exit(0);
     });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 4070881 (Add environment configuration files)
