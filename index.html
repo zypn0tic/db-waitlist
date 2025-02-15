@@ -316,40 +316,38 @@
                 joinWaitlistBtn.disabled = true;
                 joinWaitlistBtn.textContent = 'Joining...';
                 
-                console.log('Attempting to connect to:', API_URL); // Debug log
-                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: email }),
-                    mode: 'cors' // Explicitly state we're using CORS
+                    body: JSON.stringify({ email }),
+                    mode: 'cors',
+                    credentials: 'include'
                 });
                 
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to join waitlist');
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('Failed to parse response:', e);
+                    throw new Error('Server response was not valid JSON');
                 }
                 
-                // Success
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || 'Failed to join waitlist');
+                }
+                
                 emailInput.value = '';
                 alert('Successfully joined the waitlist!');
                 
             } catch (error) {
-                console.error('Detailed error:', {
+                console.error('Error details:', {
                     message: error.message,
                     name: error.name,
                     stack: error.stack
                 });
-                
-                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    alert('Unable to connect to the server. Please make sure the server is running.');
-                } else {
-                    alert(error.message || 'Failed to join waitlist. Please try again later.');
-                }
+                alert(error.message || 'Failed to join waitlist. Please try again later.');
             } finally {
                 joinWaitlistBtn.disabled = false;
                 joinWaitlistBtn.textContent = 'Join Waitlist';
