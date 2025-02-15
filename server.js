@@ -32,12 +32,17 @@ mongoose.set('strictQuery', false);
 const connectDB = async () => {
     try {
         console.log('Attempting to connect to MongoDB...');
-        console.log('Database URL exists:', !!process.env.MONGODB_URI);
         
-        const conn = await mongoose.connect(process.env.MONGODB_URI, {
+        // Clean up the MongoDB URI by removing any trailing semicolons
+        const cleanURI = process.env.MONGODB_URI.replace(/;$/, '');
+        
+        const conn = await mongoose.connect(cleanURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            dbName: 'waitlist-db'
+            dbName: 'waitlist-db',
+            // Add these additional options for better connection handling
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
         });
         
         console.log(`MongoDB Connected: ${conn.connection.host}`);
