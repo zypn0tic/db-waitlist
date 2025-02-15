@@ -1,457 +1,446 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Next-Gen Advertising</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Next-Gen Advertising</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      background: linear-gradient(135deg, #000000, #1a1a1a);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+                Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            background: linear-gradient(135deg, #000000, #1a1a1a);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
 
-    /* Animated background elements */
-    .bg-gradient {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.15;
-      z-index: 0;
-    }
+        /* Animated background elements */
+        .bg-gradient {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: 0;
+        }
 
-    .bg-gradient-1 {
-      background: #2563eb;
-      width: 500px;
-      height: 500px;
-      top: -250px;
-      left: -250px;
-      animation: float 8s ease-in-out infinite;
-    }
+        .bg-gradient-1 {
+            background: #2563eb;
+            width: 500px;
+            height: 500px;
+            top: -250px;
+            left: -250px;
+            animation: float 8s ease-in-out infinite;
+        }
 
-    .bg-gradient-2 {
-      background: #7c3aed;
-      width: 400px;
-      height: 400px;
-      bottom: -200px;
-      right: -200px;
-      animation: float 10s ease-in-out infinite;
-    }
+        .bg-gradient-2 {
+            background: #7c3aed;
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -200px;
+            animation: float 10s ease-in-out infinite;
+        }
 
-    /* Shape positioning */
-    .shape {
-      position: absolute;
-      z-index: 0;
-      opacity: 0.4;
-      pointer-events: none;
-    }
+        /* Shape positioning */
+        .shape {
+            position: fixed;
+            z-index: 0;
+            opacity: 0.4;
+            pointer-events: none;
+        }
 
-    .shape1 {
-      top: 10%;
-      left: 5%;
-      width: 100px;
-      animation: float 8s ease-in-out infinite;
-    }
+        .shape1 { top: 10%; left: 5%; width: 100px; }
+        .shape2 { top: 30%; right: 2%; width: 80px; }
+        .shape3 { bottom: 5%; left: 2%; width: 120px; }
+        .shape4 { bottom: 10%; right: 8%; width: 100px; }
 
-    .shape2 {
-      top: 30%;
-      right: 2%;
-      width: 80px;
-      animation: float 10s ease-in-out infinite;
-    }
+        .shape img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: brightness(0.7) sepia(0.2);
+        }
 
-    .shape3 {
-      bottom: 5%;
-      left: 2%;
-      width: 120px;
-      animation: float 12s ease-in-out infinite;
-    }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(20px, 20px) rotate(10deg); }
+        }
 
-    .shape4 {
-      bottom: 10%;
-      right: 8%;
-      width: 100px;
-      animation: float 9s ease-in-out infinite;
-    }
+        .content-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 20px auto;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    /* Make images responsive within their containers */
-    .shape img {
-      width: 100%;
-      height: auto;
-      display: block;
-      filter: brightness(0.7) sepia(0.2);
-    }
+        .small-tagline {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
 
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      50% { transform: translate(20px, 20px) rotate(10deg); }
-    }
+        .main-heading {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
 
-    .content-container {
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
-      padding: 40px 20px;
-      position: relative;
-      z-index: 1;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        .main-heading span {
+            display: block;
+            color: #888;
+            font-size: 1.8rem;
+            margin-top: 10px;
+        }
 
-    .small-tagline {
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      opacity: 0.8;
-      margin-bottom: 20px;
-      color: #888;
-      background: linear-gradient(to right, #2563eb, #7c3aed);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 600;
-    }
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #aaa;
+            padding: 0 20px;
+        }
 
-    .main-heading {
-      font-size: 2.5rem;
-      line-height: 1.2;
-      margin-bottom: 20px;
-    }
+        .waitlist-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-    .main-heading span {
-      display: block;
-      color: #888;
-      font-weight: 400;
-      font-size: 2rem;
-      margin-top: 10px;
-    }
+        .form-group {
+            width: 100%;
+        }
 
-    .description {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 40px;
-      color: #aaa;
-      padding: 0 20px;
-    }
+        .waitlist-form input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
 
-    .waitlist-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+        .waitlist-form input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: rgba(0, 0, 0, 0.3);
+        }
 
-    @media (min-width: 768px) {
-      .waitlist-form {
-        flex-direction: row;
-      }
-    }
+        .waitlist-form input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
 
-    .waitlist-form input[type="email"] {
-      padding: 15px 20px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.2);
-      color: #fff;
-      width: 100%;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-    }
+        .waitlist-form button {
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
 
-    .waitlist-form input[type="email"]:focus {
-      outline: none;
-      border-color: #2563eb;
-      background: rgba(0, 0, 0, 0.3);
-    }
+        .waitlist-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
 
-    .waitlist-form button {
-      width: 100%;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #2563eb, #7c3aed);
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 1rem;
-      font-weight: 500;
-      white-space: nowrap;
-    }
+        .waitlist-form button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-    .waitlist-form button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
-    }
+        .error-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+            text-align: left;
+        }
 
-    .waitlist-form button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
+        .error-message.visible {
+            display: block;
+        }
 
-    .footer {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      color: #666;
-      font-size: 0.9rem;
-    }
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            z-index: 1;
+        }
 
-    .footer a {
-      color: #888;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
 
-    .footer a:hover {
-      color: #fff;
-    }
+            .content-container {
+                padding: 30px 15px;
+                margin: 10px;
+            }
 
-    /* Updated responsive styles */
-    @media (max-width: 768px) {
-      .content-container {
-        margin: 20px;
-        padding: 30px 15px;
-        width: calc(100% - 40px);
-        max-width: 100%;
-      }
+            .main-heading {
+                font-size: 2rem;
+            }
 
-      .waitlist-form {
-        flex-direction: column;
-        padding: 0 10px;
-      }
+            .main-heading span {
+                font-size: 1.5rem;
+            }
 
-      .waitlist-form input[type="email"],
-      .waitlist-form button {
-        width: 100%;
-        margin: 5px 0;
-      }
+            .description {
+                font-size: 1rem;
+                padding: 0 10px;
+                margin-bottom: 30px;
+            }
 
-      .main-heading {
-        font-size: 2rem;
-        padding: 0 10px;
-      }
+            .shape {
+                transform: scale(0.7);
+            }
 
-      .main-heading span {
-        font-size: 1.5rem;
-      }
+            .bg-gradient-1,
+            .bg-gradient-2 {
+                opacity: 0.1;
+            }
+        }
 
-      .description {
-        font-size: 1rem;
-        padding: 0 15px;
-        margin-bottom: 30px;
-      }
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
 
-      .shape {
-        transform: scale(0.7);
-      }
-    }
+            .content-container {
+                padding: 25px 15px;
+            }
 
-    @media (max-width: 480px) {
-      .content-container {
-        margin: 15px;
-        padding: 20px 10px;
-      }
+            .main-heading {
+                font-size: 1.75rem;
+            }
 
-      .main-heading {
-        font-size: 1.75rem;
-      }
+            .main-heading span {
+                font-size: 1.25rem;
+            }
 
-      .main-heading span {
-        font-size: 1.25rem;
-      }
+            .description {
+                font-size: 0.95rem;
+                margin-bottom: 25px;
+            }
 
-      .description {
-        font-size: 0.95rem;
-        padding: 0 10px;
-      }
+            .waitlist-form input,
+            .waitlist-form button {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+            }
 
-      .small-tagline {
-        font-size: 12px;
-      }
+            .small-tagline {
+                font-size: 12px;
+            }
 
-      .waitlist-form input[type="email"],
-      .waitlist-form button {
-        padding: 12px 15px;
-        font-size: 0.95rem;
-      }
+            .shape {
+                transform: scale(0.5);
+            }
 
-      .shape {
-        transform: scale(0.5);
-      }
+            .footer {
+                font-size: 0.8rem;
+                bottom: 10px;
+            }
+        }
 
-      .shape1 { top: 5%; left: 2%; }
-      .shape2 { top: 20%; right: 1%; }
-      .shape3 { bottom: 2%; left: 1%; }
-      .shape4 { bottom: 5%; right: 4%; }
-    }
+        /* Landscape mode optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                padding: 20px;
+            }
 
-    /* Landscape mode optimization */
-    @media (max-height: 600px) and (orientation: landscape) {
-      .content-container {
-        margin: 10px auto;
-        padding: 20px 15px;
-      }
+            .content-container {
+                margin: 40px auto;
+            }
 
-      .main-heading {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-      }
+            .footer {
+                position: relative;
+                margin-top: 20px;
+            }
 
-      .description {
-        margin-bottom: 20px;
-      }
-
-      .footer {
-        position: relative;
-        margin-top: 20px;
-      }
-
-      .shape {
-        transform: scale(0.4);
-      }
-    }
-
-    /* Touch device optimization */
-    @media (hover: none) {
-      .waitlist-form button:hover {
-        transform: none;
-        box-shadow: none;
-      }
-
-      .waitlist-form button:active {
-        transform: scale(0.98);
-      }
-    }
-  </style>
+            .shape {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Background Shapes -->
-  <div class="shape shape1">
-    <img src="images/shape1.png" alt="Shape 1" />
-  </div>
-  <div class="shape shape2">
-    <img src="images/shape2.png" alt="Shape 2" />
-  </div>
-  <div class="shape shape3">
-    <img src="images/shape3.png" alt="Shape 3" />
-  </div>
-  <div class="shape shape4">
-    <img src="images/shape4.png" alt="Shape 4" />
-  </div>
+    <!-- Background Shapes -->
+    <div class="shape shape1">
+        <img src="images/shape1.png" alt="Shape 1" />
+    </div>
+    <div class="shape shape2">
+        <img src="images/shape2.png" alt="Shape 2" />
+    </div>
+    <div class="shape shape3">
+        <img src="images/shape3.png" alt="Shape 3" />
+    </div>
+    <div class="shape shape4">
+        <img src="images/shape4.png" alt="Shape 4" />
+    </div>
 
-  <!-- Animated background gradients -->
-  <div class="bg-gradient bg-gradient-1"></div>
-  <div class="bg-gradient bg-gradient-2"></div>
+    <!-- Animated background gradients -->
+    <div class="bg-gradient bg-gradient-1"></div>
+    <div class="bg-gradient bg-gradient-2"></div>
 
-  <div class="content-container">
-    <div class="small-tagline">From Ideas To Impact</div>
-    
-    <h1 class="main-heading">
-      Next-Gen Advertising
-      <span>Reserve Your Spot Now</span>
-    </h1>
-    
-    <p class="description">
-      Join the waitlist for exclusive access to cutting-edge marketing strategies powered by AI and creativity. 
-      Elevate your brand with tailored campaigns that deliver real results.
-    </p>
-    
-    <form class="waitlist-form" id="waitlistForm">
-      <input
-        type="email"
-        name="email"
-        id="emailInput"
-        placeholder="Your Email Address"
-        required
-      />
-      <button type="submit" id="joinWaitlistBtn">Join Waitlist</button>
-    </form>
-  </div>
+    <div class="content-container">
+        <div class="small-tagline">From Ideas To Impact</div>
+        
+        <h1 class="main-heading">
+            Next-Gen Advertising
+            <span>Reserve Your Spot Now</span>
+        </h1>
+        
+        <p class="description">
+            Join the waitlist for exclusive access to cutting-edge marketing strategies powered by AI and creativity. 
+            Elevate your brand with tailored campaigns that deliver real results.
+        </p>
+        
+        <form class="waitlist-form" id="waitlistForm">
+            <div class="form-group">
+                <input
+                    type="text"
+                    name="company"
+                    id="companyInput"
+                    placeholder="Company Name"
+                    required
+                />
+                <div class="error-message" id="companyError">Please enter a valid company name</div>
+            </div>
+            <div class="form-group">
+                <input
+                    type="email"
+                    name="email"
+                    id="emailInput"
+                    placeholder="Your Email Address"
+                    required
+                />
+                <div class="error-message" id="emailError">Please enter a valid email address</div>
+            </div>
+            <button type="submit" id="joinWaitlistBtn">Join Waitlist</button>
+        </form>
+    </div>
 
-  <div class="footer">
-    Made with ❤️ by Kalpit Sharma   
-  </div>
+    <div class="footer">
+        Made with ❤️ by Kalpit Sharma   
+    </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const waitlistForm = document.getElementById("waitlistForm");
-        const emailInput = document.getElementById("emailInput");
-        const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const waitlistForm = document.getElementById("waitlistForm");
+            const companyInput = document.getElementById("companyInput");
+            const emailInput = document.getElementById("emailInput");
+            const joinWaitlistBtn = document.getElementById("joinWaitlistBtn");
 
-        const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
+            const API_URL = 'https://waitlist-db-d8z6.onrender.com/api/waitlist';
 
-        waitlistForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = emailInput.value.trim();
-            
-            if (!email) {
-                alert('Please enter your email address');
-                return;
-            }
-
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            try {
-                joinWaitlistBtn.disabled = true;
-                joinWaitlistBtn.textContent = 'Joining...';
+            waitlistForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
                 
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ email })
-                });
+                const company = companyInput.value.trim();
+                const email = emailInput.value.trim();
                 
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to join waitlist');
+                // Reset error states
+                companyInput.classList.remove('error');
+                emailInput.classList.remove('error');
+                document.getElementById('companyError').classList.remove('visible');
+                document.getElementById('emailError').classList.remove('visible');
+
+                // Validation
+                let hasError = false;
+
+                if (!company) {
+                    companyInput.classList.add('error');
+                    document.getElementById('companyError').classList.add('visible');
+                    hasError = true;
                 }
-                
-                emailInput.value = '';
-                alert('Successfully joined the waitlist!');
-                
-            } catch (error) {
-                console.error('Error:', error);
-                if (error.message.includes('already registered')) {
-                    alert('This email is already registered');
-                } else {
-                    alert('Failed to join waitlist. Please try again later.');
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email || !emailRegex.test(email)) {
+                    emailInput.classList.add('error');
+                    document.getElementById('emailError').classList.add('visible');
+                    hasError = true;
                 }
-            } finally {
-                joinWaitlistBtn.disabled = false;
-                joinWaitlistBtn.textContent = 'Join Waitlist';
-            }
+
+                if (hasError) return;
+                
+                try {
+                    joinWaitlistBtn.disabled = true;
+                    joinWaitlistBtn.textContent = 'Joining...';
+                    
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, company })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to join waitlist');
+                    }
+                    
+                    companyInput.value = '';
+                    emailInput.value = '';
+                    alert('Successfully joined the waitlist!');
+                    
+                } catch (error) {
+                    console.error('Error details:', error);
+                    if (error.message.includes('already registered')) {
+                        alert('This email is already registered');
+                    } else {
+                        alert('Failed to join waitlist. Please try again later.');
+                    }
+                } finally {
+                    joinWaitlistBtn.disabled = false;
+                    joinWaitlistBtn.textContent = 'Join Waitlist';
+                }
+            });
         });
-    });
-  </script>
+    </script>
 </body>
 </html>
