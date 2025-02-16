@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Now to Singularity - Blog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(20px, -20px) rotate(10deg) scale(1.05); }
+            50% { transform: translate(40px, 20px) rotate(20deg) scale(1.1); }
+            75% { transform: translate(-20px, 30px) rotate(-10deg) scale(1.05); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+
+        @keyframes gradientMove {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+                Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            background: linear-gradient(135deg, #000000, #1a1a1a);
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: 0;
+            animation: gradientMove 15s ease-in-out infinite;
+        }
+
+        .bg-gradient-1 {
+            background: #2563eb;
+            width: 500px;
+            height: 500px;
+            top: -250px;
+            left: -250px;
+        }
+
+        .bg-gradient-2 {
+            background: #7c3aed;
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -7s;
+        }
+
+        .shape {
+            position: fixed;
+            z-index: 0;
+            opacity: 0.6;
+            pointer-events: none;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .shape1 { 
+            top: 15%; 
+            left: 10%; 
+            width: 150px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .shape2 { 
+            top: 20%; 
+            right: 15%; 
+            width: 120px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        .shape3 { 
+            bottom: 15%; 
+            left: 15%; 
+            width: 180px;
+            animation: float 22s ease-in-out infinite;
+        }
+
+        .shape4 { 
+            bottom: 20%; 
+            right: 10%; 
+            width: 160px;
+            animation: float 28s ease-in-out infinite reverse;
+        }
+
+        .shape5 {
+            position: fixed;
+            top: 50%;
+            left: 5%;
+            width: 100px;
+            opacity: 0.4;
+            animation: float 18s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .shape6 {
+            position: fixed;
+            top: 40%;
+            right: 5%;
+            width: 90px;
+            opacity: 0.4;
+            animation: float 23s ease-in-out infinite reverse;
+            z-index: 0;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .home-button:hover {
+            background: rgba(37, 99, 235, 0.3);
+            border-color: rgba(37, 99, 235, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .blog-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .blog-content {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            color: #2563eb;
+            margin: 2rem 0 1rem;
+            font-size: 1.8rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .blog-container {
+                padding: 60px 15px;
+            }
+
+            .blog-title {
+                font-size: 2rem;
+            }
+
+            .blog-content {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .shape img {
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { filter: brightness(1) hue-rotate(0deg); }
+            50% { filter: brightness(1.2) hue-rotate(45deg); }
+            100% { filter: brightness(1) hue-rotate(0deg); }
+        }
+
+        .search-container {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .blog-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .blog-card h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .blog-card .preview-text {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-card .date {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+
+        .full-blog {
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-to-blogs {
+            display: none;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-blogs:hover {
+            color: #7c3aed;
+        }
+
+        .section-title {
+            color: #fff;
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .recent-blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .recent-blogs .blog-card {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+
+        .recent-blogs .blog-card:hover {
+            background: rgba(37, 99, 235, 0.2);
+            border-color: rgba(37, 99, 235, 0.4);
+        }
+
+        .all-posts-title {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .all-posts-title:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-button">Home</a>
+
+    <!-- Background Shapes -->
+    <div class="shape shape1">
+        <img src="images/shape1.svg" alt="Shape 1">
+    </div>
+    <div class="shape shape2">
+        <img src="images/shape2.svg" alt="Shape 2">
+    </div>
+    <div class="shape shape3">
+        <img src="images/shape3.svg" alt="Shape 3">
+    </div>
+    <div class="shape shape4">
+        <img src="images/shape4.svg" alt="Shape 4">
+    </div>
+
+    <!-- Add new shapes -->
+    <div class="shape shape5">
+        <img src="images/shape3.svg" alt="Shape 5">
+    </div>
+    <div class="shape shape6">
+        <img src="images/shape4.svg" alt="Shape 6">
+    </div>
+
+    <!-- Animated background gradients -->
+    <div class="bg-gradient bg-gradient-1"></div>
+    <div class="bg-gradient bg-gradient-2"></div>
+
+    <div class="blog-container">
+        <h1 class="blog-title">My Raw Thoughts</h1>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search blogs..." id="searchInput">
+        </div>
+
+        <!-- Add Recent Blogs section -->
+        <div class="recent-blogs">
+            <h2 class="section-title">Recent Posts</h2>
+            <div class="recent-blogs-grid" id="recentBlogsGrid">
+                <!-- Recent blog cards will be populated here -->
+            </div>
+        </div>
+
+        <h2 class="section-title all-posts-title" id="allPostsTitle">All Posts</h2>
+        <div class="blog-grid" id="blogGrid">
+            <!-- Blog cards will be populated here -->
+        </div>
+
+        <div class="full-blog" id="fullBlog">
+            <a class="back-to-blogs" id="backToBlogsBtn">← Back to Blogs</a>
+            <!-- Full blog content will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const blogs = [
+            {
+                id: 1,
+                title: "From Now to Singularity",
+                date: "February 14, 2025",
+                preview: "This is my POV, how to world will look like in future with rapid exponential advancements in Technology especially AI...",
+                content: `
+                    <div class="blog-content">
+                        <p>This is my POV, how to world will look like in future with rapid exponential advancements in Technology especially AI. This article is just what I think what the future will look, not necessarily this is going to happen but some of them will be for sure.</p>
+
+                        <p>This article cover the following topics:</p>
+                        <ol>
+                            <li>Introduction</li>
+                            <li>Future of content creation</li>
+                            <li>Agentic World</li>
+                            <li>Global Economic crisis</li>
+                            <li>Alignment Problem</li>
+                            <li>Intelligence Explosion</li>
+                            <li>Concept of UBI</li>
+                            <li>Expand of AI in every sector</li>
+                            <li>Change in socio-political dynamics</li>
+                            <li>Free from biological limitations</li>
+                            <li>Simulation {Hypothesis? (No more)}</li>
+                            <li>Singularity</li>
+                        </ol>
+
+                        <h2>Introduction</h2>
+                        <p>Artificial intelligence (AI) as the revolutionary technology driving the next era of innovation. Some experts say it is the last innovation of mankind. It's about building systems that can process massive amounts of data, recognize patterns, and make decisions or predictions with incredible speed and accuracy. AI powers everything from self-driving cars and voice assistants to cutting-edge tools in medicine, finance, and gaming. It will not be limited to only these fields; rather, it will expand in every sector which we will see later.</p>
+                        
+                        <p>Andrew Ng, co-founder and former head of Google Brain and former chief scientist at Baidu, thinks "AI is the new electricity." What does that mean? Can you imagine a world without electricity? I can't. AI is set to become an omnipresent force, influencing nearly every sector and activity.</p>
+                        
+                        <p>Geoffrey Hinton, 2024 Nobel Prize winner and godfather of AI, indirectly quotes "You can't control something that is more intelligent than you." My take on this is to look around us, like how we treat the less intelligent animals than us. For example, we have to build a bridge in the middle of the jungle; we simply construct it. This looks silly, but we don't ask for the permission of the animals that belong to the jungle. So, if the super intelligent thing has goals to achieve something, it will not ask for our permission; it will simply do that.</p>
+
+                        <h2>Future of Content Creation</h2>
+                        <p>As of January 2025, there are more than 5.22 billion <a href="https://www.measure.studio/post/social-media-statistics">[1]</a>. An average person spent more than 2 hours and 23 minutes <a href="https://www.measure.studio/post/social-media-statistics">[1]</a> managing an average of 8 different social media accounts <a href="https://www.measure.studio/post/social-media-statistics">[1]</a>. The market size is worth around 104 billion dollars <a href="https://www.wpbeginner.com/research/creator-economy-statistics-that-will-blow-you-away/">[2]</a>, which is likely to increase in the future. As of now, we can see a small amount of content generated by AI. This is going to change, with AI being the most rapidly changing field of content creation. Unlike traditional methods that require expensive cameras, microphones, and heavy editing, with AI, a normal person can generate text, images, and videos using a simple smartphone. We can see glimpses of AI-generated content in small amounts on the internet now. People will eventually adapt to AI-generated content, and there might be a scarcity of original content on the internet, leading us to the brink of the dead internet theory. Just like how the internet of today's world is completely different from the original internet.</p>
+
+                        <h2>Agentic World</h2>
+                        <p>Agent refers to a software program or system designed to perceive its environment, make decisions, and take actions autonomously to achieve specific goals. This year, '2025', is going to be a year of AI agent explosion. Many experts claim that AI agents will join the workforce mainly in fields like coding, designing, simulating, and browsing. Companies will either adapt to the agentic system or collapse.</p>
+
+                        <p>Most people wonder, "Why is it taking so long to implement the agentic framework?" The biggest hurdle lies in managing prompt injection. For example, if you give an order to an agent saying, "Buy me the cheapest ticket to San Francisco next Monday," the browser agent will search the internet to find the most affordable option. While doing so, there might be malicious players or rogue agents that inject prompts based on their own requirements, potentially leading to scenarios where sensitive data, such as credit card details, falls into the wrong hands. I am quite certain that we will see many headlines about the chaos created by such vulnerabilities.</p>
+
+                        <p>On the other hand, agents will continue to learn and grow from these mistakes. Much like any disruptive technology, their evolution will be shaped by both their successes and their failures.</p>
+
+                        <p>Have you heard about <a href="https://en.wikipedia.org/wiki/Derek_J._de_Solla_Price">Price's Law</a>? This principle suggests that "the square root of the number of employees in a company does 50% of the work, while the rest contribute the remaining 50%." Now, imagine giving full agentic workloads to these highly productive individuals or, better yet, having AI agents take over repetitive, lower-value tasks. This shift could redefine workplace dynamics entirely.</p>
+
+                        <p>With AI agents handling most operational processes, companies could streamline efficiency and focus human creativity on innovation and strategy. The question then becomes: how do we ensure that these agents not only work autonomously but also ethically and securely?</p>
+
+                        <p>The agentic world of 2025 may present unprecedented opportunities, but it will also demand new frameworks of trust, accountability, and continuous improvement. Companies that strike the right balance between human ingenuity and agentic automation will likely emerge as the true leaders of this transformative era.</p>
+
+                        <h2>Global Economic Inequality: Navigating the New Financial Landscape</h2>
+                        <p>The global economic landscape stands at a critical juncture, shaped by unprecedented technological disruption, shifting geopolitical dynamics, and evolving market structures. Traditional economic models are being challenged as artificial intelligence and automation reshape industries at an accelerating pace. The impending crisis isn't merely a cyclical downturn but a fundamental restructuring of how value is created, distributed, and measured in the global economy.</p>
+
+                        <p>Central banks worldwide grapple with novel challenges as digital currencies gain prominence and algorithmic trading systems influence market behavior in ways previously unimagined. The concentration of technological power in the hands of a few corporations raises concerns about market competition and economic equality. Meanwhile, the automation of routine jobs threatens to displace millions of workers, potentially leading to widespread unemployment and social instability.</p>
+
+                        <p>However, this crisis also presents opportunities for economic reinvention. New industries emerging around artificial intelligence, renewable energy, and biotechnology could create novel forms of employment and wealth generation. The challenge lies in managing this transition while maintaining social stability and ensuring equitable distribution of the benefits of technological progress.</p>
+
+                        <h2>The Alignment Problem: Ensuring AI Serves Humanity's Best Interests</h2>
+                        <p>The alignment problem represents one of the most crucial challenges in artificial intelligence development: ensuring that AI systems pursue objectives that align with human values and interests. As AI systems become more powerful and autonomous, the consequences of misalignment grow exponentially more severe. This isn't merely a technical challenge but a philosophical and ethical imperative that could determine the future of human civilization.</p>
+
+                        <p>The complexity of human values makes perfect alignment seemingly impossible. Human values are often contradictory, context-dependent, and evolve over time. How do we encode concepts like fairness, justice, or happiness into mathematical terms that AI systems can understand and optimize for? The challenge becomes even more daunting when considering cultural differences in values across human societies.</p>
+
+                        <p>Recent advances in AI capabilities have made this problem more urgent than ever. As systems become more capable of independent decision-making, the window for ensuring proper alignment narrows. The development of artificial general intelligence (AGI) would mark a point of no return – once superintelligent systems exist, correcting misalignment might become impossible.</p>
+
+                        <h2>Intelligence Explosion: The Accelerating Path to Superintelligence</h2>
+                        <p>The concept of intelligence explosion, first proposed by I.J. Good in 1965, suggests that artificial intelligence could enter a rapid, self-improving cycle, leading to superintelligence in a remarkably short time frame. This process, often called recursive self-improvement, could occur when AI systems become capable of enhancing their own intelligence, leading to a rapid acceleration of cognitive capabilities far beyond human comprehension.</p>
+
+                        <p>The implications of such an intelligence explosion are profound and far-reaching. A superintelligent system could solve problems that have puzzled humanity for centuries, from curing diseases to unlocking the mysteries of quantum mechanics. However, this rapid acceleration also presents existential risks. A superintelligent system operating under misaligned objectives could inadvertently or deliberately cause catastrophic harm to humanity.</p>
+
+                        <h2>Universal Basic Income: A Solution for the AI Economy</h2>
+                        <p>As artificial intelligence and automation transform the job market, Universal Basic Income (UBI) emerges as a potential solution to ensure economic stability and social welfare. This concept, once considered radical, is gaining traction as a necessary response to the fundamental changes in how wealth is created and distributed in an AI-driven economy.</p>
+
+                        <p>UBI would provide every citizen with a regular, unconditional sum of money, regardless of employment status or income level. This approach acknowledges that traditional employment may no longer be the primary means of distributing economic value in a highly automated society. It could provide a safety net for workers displaced by AI while fostering innovation and entrepreneurship by reducing the financial risks associated with career changes or starting new ventures.</p>
+
+                        <p>Implementation challenges remain significant, including questions about funding mechanisms, optimal payment levels, and potential effects on work incentives. However, pilot programs worldwide have shown promising results, suggesting that UBI could help maintain social stability while facilitating the transition to a new economic paradigm.</p>
+
+                        <h2>AI Expansion Across Sectors: The Universal Technology</h2>
+                        <p>The expansion of artificial intelligence across all sectors of human activity represents a transformation comparable to the introduction of electricity or the internet. AI is no longer confined to specialized applications but is becoming a fundamental technology that enhances and reimagines every industry, from healthcare and education to agriculture and entertainment.</p>
+
+                        <p>In healthcare, AI systems are revolutionizing diagnosis, drug discovery, and personalized medicine. Advanced algorithms can detect diseases earlier and with greater accuracy than human physicians, while AI-driven research accelerates the development of new treatments. Education is being transformed through adaptive learning systems that personalize instruction to each student's needs and learning style.</p>
+
+                        <p>Manufacturing and logistics have entered a new era of efficiency with AI-optimized supply chains and smart factories. The financial sector has been revolutionized by algorithmic trading, automated risk assessment, and AI-powered fraud detection. Even creative industries are being transformed, with AI assisting in content creation, design, and artistic expression.</p>
+
+                        <h2>Changing Socio-Political Dynamics in an AI World</h2>
+                        <p>The rise of artificial intelligence is catalyzing fundamental changes in social and political structures worldwide. Traditional power dynamics are being reshaped as AI capabilities become a crucial determinant of national and corporate influence. The ability to develop and control advanced AI systems is becoming as strategically important as military or economic power.</p>
+
+                        <p>Democratic processes face new challenges and opportunities in an AI-driven world. Social media algorithms already influence public opinion and electoral outcomes, while AI-powered surveillance technologies raise concerns about privacy and civil liberties. The concentration of AI capabilities in the hands of a few powerful entities – whether corporations or nations – could lead to new forms of technological oligarchy.</p>
+
+                        <p>However, AI also offers tools for enhancing democratic participation and governance. Advanced analytics can improve policy-making by providing better data and predictions, while AI systems could help reduce bureaucratic inefficiency and corruption through automated oversight.</p>
+
+                        <h2>Breaking Free from Biological Limitations</h2>
+                        <p>Artificial intelligence and related technologies are pushing the boundaries of human capability, offering potential liberation from biological constraints. Advanced neural interfaces, genetic engineering, and AI-enhanced medical treatments could fundamentally alter the human condition, extending lifespans and enhancing cognitive and physical capabilities.</p>
+
+                        <p>This technological evolution raises profound questions about the nature of human identity and consciousness. As the line between biological and artificial intelligence blurs, we may need to reconsider what it means to be human. The potential for human-AI merger through brain-computer interfaces could lead to new forms of existence that transcend current biological limitations.</p>
+
+                        <p>However, these possibilities also raise ethical concerns about equality and access. The ability to enhance human capabilities through technology could create new forms of social stratification between enhanced and non-enhanced individuals.</p>
+
+                        <h2>The Technological Singularity: Point of No Return</h2>
+                        <p>The technological singularity represents a hypothetical future point when artificial intelligence surpasses human intelligence, leading to runaway technological growth and unprecedented changes in human civilization. This concept, popularized by figures like Ray Kurzweil, suggests that the acceleration of technological progress will reach a point where the future becomes fundamentally unpredictable and incomprehensible to human minds.</p>
+
+                        <p>The implications of such a singularity are profound and far-reaching. It could mark the end of human history as we know it and the beginning of a post-human era. The convergence of AI, nanotechnology, biotechnology, and quantum computing could create possibilities that currently exist only in science fiction.</p>
+
+                        <p>Whether the singularity leads to utopia or dystopia depends largely on how we prepare for it today. The decisions we make about AI development, ethical frameworks, and social structures will shape the nature of this transformation. The challenge lies in maintaining human agency and ensuring that the benefits of this technological revolution serve the collective good of humanity.</p>
+                    </div>
+                `
+            },
+            {
+                id: 2,
+                title: "The Future of AI in Healthcare",
+                date: "March 16, 2024",
+                preview: "AI is revolutionizing healthcare with breakthrough developments in diagnosis, treatment, and drug discovery...",
+                content: `<h2>The Future of AI in Healthcare</h2><p>Content coming soon...</p>`
+            },
+            // Add more blog entries here
+        ];
+
+        const blogGrid = document.getElementById('blogGrid');
+        const fullBlog = document.getElementById('fullBlog');
+        const searchInput = document.getElementById('searchInput');
+        const backToBlogsBtn = document.getElementById('backToBlogsBtn');
+
+        function createBlogCard(blog) {
+            return `
+                <div class="blog-card" data-id="${blog.id}">
+                    <h3>${blog.title}</h3>
+                    <p class="preview-text">${blog.preview}</p>
+                    <p class="date">${blog.date}</p>
+                </div>
+            `;
+        }
+
+        function displayBlogs(blogsToShow) {
+            blogGrid.innerHTML = blogsToShow.map(blog => createBlogCard(blog)).join('');
+            attachBlogCardListeners();
+        }
+
+        function attachBlogCardListeners() {
+            document.querySelectorAll('.blog-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const blogId = parseInt(card.dataset.id);
+                    const blog = blogs.find(b => b.id === blogId);
+                    showFullBlog(blog);
+                });
+            });
+        }
+
+        function showFullBlog(blog) {
+            blogGrid.style.display = 'none';
+            document.querySelector('.recent-blogs').style.display = 'none';
+            fullBlog.style.display = 'block';
+            backToBlogsBtn.style.display = 'block';
+            fullBlog.innerHTML = `
+                <a class="back-to-blogs" id="backToBlogsBtn">← Back to Blogs</a>
+                <h1 class="blog-title">${blog.title}</h1>
+                <p class="date">${blog.date}</p>
+                ${blog.content}
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        function showBlogGrid() {
+            blogGrid.style.display = 'grid';
+            document.querySelector('.recent-blogs').style.display = 'block';
+            fullBlog.style.display = 'none';
+            backToBlogsBtn.style.display = 'none';
+            searchInput.value = '';
+            displayBlogs(blogs);
+        }
+
+        function displayRecentBlogs() {
+            const recentBlogsGrid = document.getElementById('recentBlogsGrid');
+            const recentBlogs = blogs
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 2); // Show latest 2 blogs
+            
+            recentBlogsGrid.innerHTML = recentBlogs
+                .map(blog => createBlogCard(blog))
+                .join('');
+            
+            attachBlogCardListeners();
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredBlogs = blogs.filter(blog => 
+                blog.title.toLowerCase().includes(searchTerm) || 
+                blog.preview.toLowerCase().includes(searchTerm)
+            );
+            displayBlogs(filteredBlogs);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('back-to-blogs')) {
+                showBlogGrid();
+            }
+        });
+
+        document.getElementById('allPostsTitle').addEventListener('click', () => {
+            showBlogGrid();
+            window.scrollTo({
+                top: document.getElementById('allPostsTitle').offsetTop - 20,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initial display
+        displayRecentBlogs();
+        displayBlogs(blogs);
+    </script>
+</body>
+</html> 
